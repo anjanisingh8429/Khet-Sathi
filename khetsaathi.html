@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>KhetSaathi – Agriculture Resource Optimizer</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hind:wght@400;600;700&display=swap">
+<style>
+:root{--bg:#eef3e8;--card:#fff;--tx:#14301f;--mut:#5b6e60;--ac:#1f7a4d;--gd:#c98f0a;--bl:#2a7fb8;--rd:#c0392b;--bd:#d5dfcc;--in:#f6f9f2;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1a13;--card:#17251c;--tx:#e6efe3;--mut:#9db3a2;--ac:#4cc98a;--gd:#e8b53a;--bl:#5eb3e6;--rd:#ef7a6c;--bd:#2a3d30;--in:#1c2d22}}
+:root[data-theme="dark"]{--bg:#0f1a13;--card:#17251c;--tx:#e6efe3;--mut:#9db3a2;--ac:#4cc98a;--gd:#e8b53a;--bl:#5eb3e6;--rd:#ef7a6c;--bd:#2a3d30;--in:#1c2d22}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font-family:Hind,"Noto Sans Devanagari",system-ui,sans-serif;line-height:1.5}
+header{background:var(--ac);color:#fff;padding:18px 20px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+header h1{margin:0;font-size:1.7rem;letter-spacing:.2px}header p{margin:0;opacity:.9;font-size:.95rem}
+.btns button{background:rgba(255,255,255,.18);color:#fff;border:1px solid rgba(255,255,255,.5);padding:7px 14px;border-radius:8px;font:inherit;cursor:pointer;margin-left:6px}
+.btns button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--gd);outline-offset:1px}
+main{display:grid;grid-template-columns:320px 1fr;gap:16px;padding:16px;max-width:1300px;margin:auto}
+@media(max-width:900px){main{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:16px;margin-bottom:16px}
+.card h2{margin:0 0 10px;font-size:1.1rem;color:var(--ac)}
+label{display:block;font-size:.85rem;color:var(--mut);margin-top:9px}
+input,select{width:100%;padding:8px 10px;border:1px solid var(--bd);border-radius:8px;background:var(--in);color:var(--tx);font:inherit}
+input[type=range]{padding:0;accent-color:var(--ac)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.kpi{background:var(--in);border-radius:10px;padding:10px;border-left:4px solid var(--ac)}.kpi small{color:var(--mut);display:block}.kpi b{font-size:1.25rem}
+.kpi.g{border-color:var(--gd)}.kpi.b{border-color:var(--bl)}.kpi.r{border-color:var(--rd)}
+.score{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.ring{width:130px;height:130px;border-radius:50%;display:grid;place-items:center;flex:none}
+.ring div{width:98px;height:98px;border-radius:50%;background:var(--card);display:grid;place-items:center;font-size:2rem;font-weight:700}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}@media(max-width:900px){.two{grid-template-columns:1fr}}
+.cv{position:relative;height:250px}
+table{width:100%;border-collapse:collapse;font-size:.92rem}th,td{padding:6px 8px;border-bottom:1px solid var(--bd);text-align:left}th{color:var(--mut);font-weight:600}
+.tw{overflow-x:auto}
+.al{padding:9px 12px;border-radius:8px;margin:6px 0;border-left:5px solid var(--ac);background:var(--in)}.al.l1{border-color:var(--gd)}.al.l2{border-color:var(--rd)}
+.tag{display:inline-block;background:var(--in);border:1px solid var(--bd);border-radius:20px;padding:2px 10px;margin:2px;font-size:.85rem}
+.note{color:var(--mut);font-size:.8rem}
+@media print{header .btns,#inputs{display:none}main{display:block}body{background:#fff}}
+</style></head><body>
+<header><div><h1>🌾 KhetSaathi</h1><p data-h="खेती के संसाधनों का स्मार्ट ऑप्टिमाइज़र: पानी, खाद और मुनाफ़ा">Smart agriculture resource optimizer: water, fertilizer and profit</p></div>
+<div class="btns"><button id="lg">हिन्दी</button><button onclick="print()" data-h="PDF रिपोर्ट">Download PDF report</button></div></header>
+<main>
+<aside id="inputs"><div class="card"><h2 data-h="खेत की जानकारी">Farm details</h2>
+<label data-h="फ़सल">Crop</label><select id="crop"></select>
+<div class="row"><div><label data-h="क्षेत्रफल (एकड़)">Area (acre)</label><input id="area" type="number" value="2" min=".5" step=".5"></div>
+<div><label data-h="सीज़न">Season</label><select id="season"><option value="rabi">Rabi</option><option value="kharif">Kharif</option><option value="zaid">Zaid</option></select></div></div>
+<label data-h="सिंचाई का तरीका">Irrigation method</label><select id="meth"><option value=".6">Flood / नहर (60%)</option><option value=".75">Sprinkler / फव्वारा (75%)</option><option value=".9">Drip / बूंद-बूंद (90%)</option></select>
+<div class="row"><div><label>N (kg/acre)</label><input id="N" type="number" value="20"></div><div><label>P (kg/acre)</label><input id="P" type="number" value="8"></div></div>
+<div class="row"><div><label>K (kg/acre)</label><input id="K" type="number" value="10"></div><div><label>pH</label><input id="ph" type="number" value="7.2" step=".1"></div></div>
+<div class="row"><div><label data-h="औसत तापमान °C">Avg temp °C</label><input id="T" type="number" value="20"></div><div><label data-h="दिन-रात अंतर °C">Day-night gap °C</label><input id="Tr" type="number" value="12"></div></div>
+<div class="row"><div><label data-h="सीज़न की बारिश (mm)">Season rain (mm)</label><input id="rain" type="number" value="40"></div><div><label data-h="बजट (₹)">Budget (₹)</label><input id="bud" type="number" value="45000"></div></div>
+<label data-h="मंडी भाव (₹/क्विंटल)">Mandi price (₹/quintal)</label><input id="price" type="number">
+<p class="note" data-h="मिट्टी की जांच का डेटा डालें। लागत और भाव अनुमानित हैं, बदले जा सकते हैं।">Enter soil-test values. Costs and prices are estimates you can edit.</p></div>
+<div class="card"><h2 data-h="क्या होगा अगर? (सिमुलेटर)">What-if simulator</h2>
+<label><span data-h="पानी">Water</span>: <b id="wv">100</b>%</label><input id="w" type="range" min="50" max="150" value="100">
+<label><span data-h="खाद">Fertilizer</span>: <b id="fv">100</b>%</label><input id="f" type="range" min="50" max="150" value="100"></div></aside>
+<section>
+<div class="card"><div class="score"><div class="ring" id="ring"><div id="sc">0</div></div>
+<div style="flex:1;min-width:200px"><h2 data-h="ऑप्टिमाइज़ेशन स्कोर">Optimization score</h2><div id="verdict"></div><div id="best" style="margin-top:6px"></div></div></div>
+<div class="kpis" style="margin-top:12px" id="kpis"></div></div>
+<div class="two"><div class="card"><h2 data-h="1. स्मार्ट फ़सल सुझाव">1. Smart crop recommender</h2><div class="cv"><canvas id="c1"></canvas></div><p class="note" data-h="स्कोर: सीज़न, तापमान, pH और पोषक तत्वों का मेल">Score: season, temperature, pH and nutrient match</p></div>
+<div class="card"><h2 data-h="2. सिंचाई ऑप्टिमाइज़र">2. Irrigation optimizer</h2><div class="cv"><canvas id="c2"></canvas></div><div id="irr"></div></div></div>
+<div class="two"><div class="card"><h2 data-h="3. खाद योजना">3. Fertilizer planner</h2><div class="tw"><table id="ft"></table></div><p class="note" data-h="खाद की मात्रा = फ़सल की ज़रूरत − मिट्टी में उपलब्ध">Dose = crop need − soil supply</p></div>
+<div class="card"><h2 data-h="4. लागत और मुनाफ़ा">4. Cost and profit</h2><div class="cv"><canvas id="c3"></canvas></div></div></div>
+<div class="two"><div class="card"><h2 data-h="5. मौसम जोखिम चेतावनी">5. Weather risk alerts</h2><div id="al"></div></div>
+<div class="card"><h2 data-h="6. मुनाफ़ा बनाम इनपुट (What-if)">6. Profit vs input level (what-if)</h2><div class="cv"><canvas id="c4"></canvas></div></div></div>
+<p class="note" data-h="यह प्रोटोटाइप कृषि के औसत मानकों और FAO-56 आधारित वाष्पीकरण सूत्र पर चलता है। असली फ़ैसले से पहले स्थानीय कृषि विज्ञान केंद्र (KVK) से सलाह लें।">Prototype built on average agronomy norms and an FAO-56 style evapotranspiration formula. Check with your local KVK before real decisions.</p>
+</section></main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+const $=i=>document.getElementById(i);let lang='en',ch={};
+const T=(e,h)=>lang==='hi'?h:e;
+const C={wheat:{n:['Wheat','गेहूं'],s:['rabi'],N:50,P:24,K:16,ph:[6,7.5],t:[12,25],d:130,kc:[.4,1.15,.4],y:18,p:2425,c:9000,fs:0},
+rice:{n:['Rice','धान'],s:['kharif'],N:48,P:24,K:16,ph:[5.5,7],t:[22,32],d:120,kc:[1.05,1.2,.9],y:22,p:2300,c:14000,fs:1},
+maize:{n:['Maize','मक्का'],s:['kharif','zaid'],N:48,P:24,K:16,ph:[5.8,7.5],t:[18,30],d:110,kc:[.4,1.2,.6],y:22,p:2090,c:8000,fs:1},
+mustard:{n:['Mustard','सरसों'],s:['rabi'],N:32,P:16,K:8,ph:[6,7.5],t:[10,25],d:120,kc:[.35,1.1,.35],y:6,p:5950,c:6000,fs:0},
+sugarcane:{n:['Sugarcane','गन्ना'],s:['rabi','kharif','zaid'],N:100,P:32,K:32,ph:[6,8],t:[20,35],d:330,kc:[.4,1.25,.75],y:350,p:350,c:30000,fs:1},
+potato:{n:['Potato','आलू'],s:['rabi'],N:50,P:32,K:40,ph:[5,6.5],t:[12,22],d:100,kc:[.5,1.15,.75],y:90,p:1200,c:40000,fs:1},
+tomato:{n:['Tomato','टमाटर'],s:['rabi','zaid'],N:50,P:32,K:32,ph:[6,7],t:[18,28],d:120,kc:[.6,1.15,.8],y:120,p:1500,c:50000,fs:1}};
+const cn=k=>C[k].n[lang==='hi'?1:0];
+Object.keys(C).forEach(k=>$('crop').add(new Option(C[k].n[0]+' / '+C[k].n[1],k)));
+const fmt=n=>'₹'+Math.round(n).toLocaleString('en-IN');
+const cl=(v,a,b)=>Math.max(a,Math.min(b,v));
+function P(){return{k:$('crop').value,a:+$('area').value||1,se:$('season').value,N:+$('N').value||0,Pp:+$('P').value||0,K:+$('K').value||0,ph:+$('ph').value,Tm:+$('T').value,R:+$('Tr').value,rain:+$('rain').value||0,bud:+$('bud').value||1,pr:+$('price').value,m:+$('meth').value}}
+const dist=(v,[a,b])=>v<a?a-v:v>b?v-b:0;
+function fit(c,p){const m=c.s.includes(p.se)?1:.3,t=1-Math.min(1,dist(p.Tm,c.t)/10),h=1-Math.min(1,dist(p.ph,c.ph)/1.5),n=(Math.min(1,p.N/c.N)+Math.min(1,p.Pp/c.P)+Math.min(1,p.K/c.K))/3;return 100*(.3*m+.25*t+.25*h+.2*n)}
+function sim(c,p){const et0=Math.max(1,.0023*(p.Tm+17.8)*Math.sqrt(Math.max(1,p.R))*15),rd=.8*p.rain/c.d,wk=[],ev=[];let dep=0,tot=0,wE=0,wN=0;
+for(let d=1;d<=c.d;d++){const x=d/c.d,[k0,km,ke]=c.kc;const kc=x<.2?k0:x<.45?k0+(km-k0)*(x-.2)/.25:x<.75?km:km+(ke-km)*(x-.75)/.25;const e=kc*et0;tot+=e;wE+=e;wN+=Math.max(0,e-rd);dep+=e-rd;if(dep<0)dep=0;if(dep>=45){ev.push(d);dep=0}
+if(d%7===0||d===c.d){wk.push([wE,wN]);wE=0;wN=0}}
+return{et0,tot,wk,ev,lit:ev.length*45*4046.86*p.a/p.m}}
+function fert(c,p){const nd=Math.max(0,c.N-p.N),pd=Math.max(0,c.P-p.Pp),kd=Math.max(0,c.K-p.K);const dap=pd/.46,urea=Math.max(0,nd-.18*dap)/.46,mop=kd/.6;
+const r=[['Urea (46% N)',urea,6],['DAP (46% P₂O₅)',dap,27],['MOP (60% K₂O)',mop,34]].map(([n,q,pc])=>[n,q,q*p.a,q*p.a*pc]);return{r,cost:r.reduce((s,x)=>s+x[3],0)}}
+function alerts(c,p,e){const a=[],tx=p.Tm+p.R/2,tn=p.Tm-p.R/2;
+if(tx>c.t[1]+10)a.push({l:2,t:T('Heatwave risk: max temp about '+tx.toFixed(0)+'°C. Irrigate in the evening and use mulch.','लू का खतरा: अधिकतम तापमान लगभग '+tx.toFixed(0)+'°C। शाम को सिंचाई करें और मल्चिंग करें।')});
+if(tn<4&&c.fs)a.push({l:2,t:T('Frost risk for '+cn(p.k)+' (min '+tn.toFixed(0)+'°C). Light irrigation at night, cover young plants.','पाला पड़ने का खतरा (न्यूनतम '+tn.toFixed(0)+'°C)। रात में हल्की सिंचाई करें, छोटे पौधे ढकें।')});
+if(p.rain>c.d*8)a.push({l:1,t:T('Heavy rain expected: make drainage channels and delay fertilizer top-dressing.','भारी बारिश की संभावना: जल निकासी बनाएं और यूरिया टॉप-ड्रेसिंग टालें।')});
+if(p.rain<.15*e.tot)a.push({l:1,t:T('Low rainfall ('+p.rain+' mm). Irrigation is critical; consider drip or sprinkler.','बारिश कम ('+p.rain+' mm)। सिंचाई ज़रूरी है; ड्रिप या स्प्रिंकलर अपनाएं।')});
+if(dist(p.ph,c.ph)>0)a.push({l:1,t:T('Soil pH '+p.ph+' is outside the ideal '+c.ph.join('–')+'. '+(p.ph<c.ph[0]?'Add lime.':'Add gypsum or organic matter.'),'मिट्टी का pH '+p.ph+' आदर्श '+c.ph.join('–')+' से बाहर है। '+(p.ph<c.ph[0]?'चूना डालें।':'जिप्सम या जैविक खाद डालें।'))});
+if(!c.s.includes(p.se))a.push({l:1,t:T('Off-season sowing: yield may fall.','बेमौसम बुवाई: उपज घट सकती है।')});
+if(!a.length)a.push({l:0,t:T('No major weather risk. Conditions look good.','कोई बड़ा मौसम जोखिम नहीं। स्थिति अच्छी है।')});return a}
+const resp=x=>x<=1?1-1.2*(1-x)**2:1-.5*(x-1)**2;
+function calc(k,p,w,f){const c=C[k],e=sim(c,p),fz=fert(c,p),ft=fit(c,p),al=alerts(c,p,e);
+const risk=1-.06*al.filter(a=>a.l==2).length-.02*al.filter(a=>a.l==1).length;
+const yq=c.y*p.a*(.6+.4*ft/100)*resp(w)*resp(f)*risk,rev=yq*p.pr,wc=e.lit/1000*.8*w,fc=fz.cost*f,oc=c.c*p.a,cost=wc+fc+oc,pf=rev-cost,roi=pf/cost*100;
+const sc=Math.round(.5*ft+.3*cl(roi,0,100)+.2*100*Math.min(1,p.bud/cost));
+return{c,e,fz,ft,al,yq,rev,wc,fc,oc,cost,pf,roi,sc,be:cost/yq}}
+function mk(id,cfg){if(ch[id])ch[id].destroy();ch[id]=new Chart($(id),cfg)}
+function render(){const p=P(),w=$('w').value/100,f=$('f').value/100;$('wv').textContent=Math.round(w*100);$('fv').textContent=Math.round(f*100);
+const r=calc(p.k,p,w,f),st=getComputedStyle(document.documentElement),col=n=>st.getPropertyValue(n).trim();
+Chart.defaults.color=col('--mut');Chart.defaults.font.family='Hind,system-ui,sans-serif';Chart.defaults.maintainAspectRatio=false;
+const sc=r.sc>=70?'--ac':r.sc>=45?'--gd':'--rd';
+$('ring').style.background=`conic-gradient(${col(sc)} ${r.sc*3.6}deg,${col('--bd')} 0)`;$('sc').textContent=r.sc;
+$('verdict').textContent=r.sc>=70?T('Strong plan: good fit, healthy profit and within budget.','मज़बूत योजना: फ़सल उपयुक्त, अच्छा मुनाफ़ा और बजट के अंदर।'):r.sc>=45?T('Workable plan, but there is room to improve. Try the what-if sliders.','चल सकती है, पर सुधार की गुंजाइश है। स्लाइडर आज़माएं।'):T('Weak plan: check the crop choice, season or budget.','कमज़ोर योजना: फ़सल, सीज़न या बजट जाँचें।');
+const all=Object.keys(C).map(k=>[k,fit(C[k],p)]).sort((a,b)=>b[1]-a[1]);
+$('best').innerHTML=all[0][0]!==p.k?`<span class="tag">${T('Better fit','बेहतर विकल्प')}: <b>${cn(all[0][0])}</b> (${all[0][1].toFixed(0)}/100)</span>`:`<span class="tag">✔ ${T('Best crop for these conditions','इन हालात के लिए सबसे अच्छी फ़सल')}</span>`;
+const tw=r.e.ev.length*45*w;
+$('kpis').innerHTML=[['',T('Expected yield','अनुमानित उपज'),r.yq.toFixed(1)+' q'],['g',T('Revenue','आमदनी'),fmt(r.rev)],['r',T('Total cost','कुल लागत'),fmt(r.cost)],['',T('Net profit','शुद्ध मुनाफ़ा'),fmt(r.pf)],['g','ROI',r.roi.toFixed(0)+'%'],['b',T('Break-even price','ब्रेक-ईवन भाव'),fmt(r.be)+'/q'],['b',T('Water use','पानी'),(r.e.lit*w/1e6).toFixed(2)+' M L']].map(([c,l,v])=>`<div class="kpi ${c}"><small>${l}</small><b>${v}</b></div>`).join('');
+mk('c1',{type:'bar',data:{labels:all.map(a=>cn(a[0])),datasets:[{data:all.map(a=>+a[1].toFixed(0)),backgroundColor:all.map(a=>a[0]===p.k?col('--gd'):col('--ac'))}]},options:{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{max:100}}}});
+mk('c2',{type:'bar',data:{labels:r.e.wk.map((_,i)=>'W'+(i+1)),datasets:[{label:T('Crop water need (mm)','फ़सल की पानी की ज़रूरत (mm)'),data:r.e.wk.map(x=>+x[0].toFixed(1)),backgroundColor:col('--bl')},{label:T('After rain (mm)','बारिश घटाकर (mm)'),data:r.e.wk.map(x=>+x[1].toFixed(1)),backgroundColor:col('--gd')}]},options:{scales:{x:{ticks:{maxTicksLimit:14}}}}});
+$('irr').innerHTML=`<p><b>${r.e.ev.length}</b> ${T('irrigations of about','सिंचाई, हर बार लगभग')} ${(45*w).toFixed(0)} mm. ${T('Daily ET₀','दैनिक ET₀')}: ${r.e.et0.toFixed(1)} mm.<br>${T('Irrigate on crop day','सिंचाई का दिन')}: ${r.e.ev.slice(0,12).map(d=>`<span class="tag">${d}</span>`).join('')}${r.e.ev.length>12?'…':''}</p>`;
+$('ft').innerHTML=`<tr><th>${T('Fertilizer','खाद')}</th><th>kg/acre</th><th>${T('Total kg','कुल kg')}</th><th>${T('Cost','लागत')}</th></tr>`+r.fz.r.map(x=>`<tr><td>${x[0]}</td><td>${x[1].toFixed(0)}</td><td>${(x[2]*f).toFixed(0)}</td><td>${fmt(x[3]*f)}</td></tr>`).join('')+`<tr><th colspan="3">${T('Total','कुल')}</th><th>${fmt(r.fc)}</th></tr>`;
+mk('c3',{type:'doughnut',data:{labels:[T('Seed, labour, other','बीज, मज़दूरी, अन्य'),T('Fertilizer','खाद'),T('Irrigation','सिंचाई'),T('Profit','मुनाफ़ा')],datasets:[{data:[r.oc,r.fc,r.wc,Math.max(0,r.pf)].map(Math.round),backgroundColor:[col('--mut'),col('--gd'),col('--bl'),col('--ac')],borderColor:col('--card')}]},options:{plugins:{legend:{position:'right'}}}});
+$('al').innerHTML=r.al.map(a=>`<div class="al l${a.l}">${a.l==2?'🔴':a.l==1?'🟠':'🟢'} ${a.t}</div>`).join('');
+const xs=[50,60,70,80,90,100,110,120,130,140,150];
+mk('c4',{type:'line',data:{labels:xs.map(x=>x+'%'),datasets:[{label:T('Vary water','पानी बदलें'),data:xs.map(x=>Math.round(calc(p.k,p,x/100,f).pf)),borderColor:col('--bl'),tension:.3},{label:T('Vary fertilizer','खाद बदलें'),data:xs.map(x=>Math.round(calc(p.k,p,w,x/100).pf)),borderColor:col('--gd'),tension:.3}]},options:{scales:{y:{title:{display:true,text:T('Profit (₹)','मुनाफ़ा (₹)')}}}}});}
+$('crop').onchange=()=>{$('price').value=C[$('crop').value].p;$('season').value=C[$('crop').value].s[0];render()};
+document.querySelectorAll('input,select').forEach(e=>e.addEventListener('input',render));
+document.querySelectorAll('[data-h]').forEach(e=>e.dataset.e=e.textContent);
+$('lg').onclick=()=>{lang=lang==='en'?'hi':'en';document.documentElement.lang=lang;$('lg').textContent=lang==='en'?'हिन्दी':'English';document.querySelectorAll('[data-h]').forEach(e=>e.textContent=lang==='hi'?e.dataset.h:e.dataset.e);render()};
+$('crop').value='wheat';$('price').value=C.wheat.p;render();
+</script></body></html>
